@@ -1,104 +1,62 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
+import { decodeJWT } from './lib/jwt';
+import type { JWTHeader, JWTPayload } from './lib/jwt';
+import DecodeView from './components/DecodeView';
+import EncodeView from './components/EncodeView';
 
 interface JWTData {
   header: string;
   payload: string;
-  exp?: number;
-}
-
-interface ClaimsTable {
-  [key: string]: any;
 }
 
 function App() {
   const [jwt, setJwt] = useState<string>('');
   const [decoded, setDecoded] = useState<JWTData>({ header: '', payload: '' });
-  const [headerTable, setHeaderTable] = useState<ClaimsTable>({});
-  const [payloadTable, setPayloadTable] = useState<ClaimsTable>({});
-  const [isValid, setIsValid] = useState<boolean>(true);
+  const [headerTable, setHeaderTable] = useState<Record<string, any> | null>(null);
+  const [payloadTable, setPayloadTable] = useState<Record<string, any> | null>(null);
+  const [isValid, setIsValid] = useState<boolean>(false);
   const [activeHeaderTab, setActiveHeaderTab] = useState<'json' | 'table'>('json');
   const [activePayloadTab, setActivePayloadTab] = useState<'json' | 'table'>('json');
+  const [viewMode, setViewMode] = useState<'decode' | 'encode'>('decode');
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tokenFromUrl = urlParams.get('token');
-    
-    if (tokenFromUrl) {
-      setJwt(tokenFromUrl);
-      decodeJWT(tokenFromUrl);
-    } else {
-      const defaultToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkxhenguamFyIiwicm9sIjoiQmFja2VuZCBEZXZlbG9wZXIifQ.YSwaC6Owfb6aJS7VFT92ZaMqnh0xJCzx0foimU-xMV0';
-      setJwt(defaultToken);
-      decodeJWT(defaultToken);
-    }
+    const initializeToken = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tokenFromUrl = urlParams.get('token');
+
+      const defaultToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+
+      const initial = tokenFromUrl || defaultToken;
+      setJwt(initial);
+      handleDecode(initial);
+    };
+
+    initializeToken();
   }, []);
 
-  const decodeJWT = (token: string) => {
-    if (!token) {
-      setDecoded({ header: '', payload: '' });
-      setHeaderTable({});
-      setPayloadTable({});
-      setIsValid(false);
-      return;
-    }
-
-    try {
-      const parts = token.split('.');
-      if (parts.length !== 3) {
-        throw new Error('Invalid JWT format');
-      }
-
-      const [header, payload] = parts;
-      
-      // Base64 URL decode
-      const decodeBase64 = (str: string): string => {
-        str = str.replace(/-/g, '+').replace(/_/g, '/');
-        while (str.length % 4) {
-          str += '=';
-        }
-        return decodeURIComponent(
-          atob(str)
-            .split('')
-            .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-            .join('')
-        );
-      };
-
-      const headerDecoded = decodeBase64(header);
-      const payloadDecoded = decodeBase64(payload);
-
-      const headerObj = JSON.parse(headerDecoded);
-      const payloadObj = JSON.parse(payloadDecoded);
-
-      setDecoded({
-        header: JSON.stringify(headerObj, null, 2),
-        payload: JSON.stringify(payloadObj, null, 2)
-      });
-
-      setHeaderTable(headerObj);
-      setPayloadTable(payloadObj);
-      setIsValid(true);
-
-    } catch (error) {
-      setDecoded({
-        header: 'Invalid JWT',
-        payload: 'Invalid JWT'
-      });
-      setHeaderTable({});
-      setPayloadTable({});
-      setIsValid(false);
-    }
+  const handleDecode = (token: string) => {
+    const result = decodeJWT(token);
+    setDecoded({ 
+      header: result.headerStr, 
+      payload: result.payloadStr 
+    });
+    setHeaderTable(result.headerObj);
+    setPayloadTable(result.payloadObj);
+    setIsValid(result.isValid);
   };
 
   const handleJWTChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setJwt(value);
-    decodeJWT(value);
+    handleDecode(value);
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+    }
   };
 
   const copyJWT = () => copyToClipboard(jwt);
@@ -108,123 +66,175 @@ function App() {
   const clearJWT = () => {
     setJwt('');
     setDecoded({ header: '', payload: '' });
-    setHeaderTable({});
-    setPayloadTable({});
+    setHeaderTable(null);
+    setPayloadTable(null);
     setIsValid(false);
   };
 
-  const renderTable = (data: ClaimsTable) => {
-    return (
-      <table className="claims-table">
-        <tbody>
-          {Object.entries(data).map(([key, value]) => (
-            <tr key={key}>
-              <td className="claim-key">{key}</td>
-              <td className="claim-value">
-                {typeof value === 'boolean' ? value.toString() : value}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
-  };
-
   return (
-    <div className="App">
-      <header className="app-header">
-        <div className="header-top">
-          <h1>JSON WEB TOKEN (JWT)</h1>
-          <div className="header-actions">
-            <button className="header-btn" onClick={copyJWT}>
-              COPY
-            </button>
-            <button className="header-btn" onClick={clearJWT}>
-              CLEAR
-            </button>
+    <div style={{
+      maxWidth: '1200px',
+      margin: '0 auto',
+      padding: '24px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
+      backgroundColor: '#f5f5f5',
+      color: '#262626',
+      lineHeight: 1.5
+    }}>
+      <header style={{
+        background: '#ffffff',
+        borderRadius: '8px',
+        padding: '24px',
+        marginBottom: '16px',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        border: '1px solid #d9d9d9'
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '12px'
+        }}>
+          <h1 style={{ 
+            fontSize: '24px', 
+            fontWeight: '600', 
+            color: '#262626', 
+            margin: 0 
+          }}>
+            JSON WEB TOKEN (JWT)
+          </h1>
+          <div style={{
+            display: 'flex',
+            gap: '12px',
+            alignItems: 'center'
+          }}>
+            <div style={{ 
+              display: 'flex', 
+              gap: '4px', 
+              background: '#f0f0f0', 
+              padding: '4px', 
+              borderRadius: '6px',
+              marginRight: '12px'
+            }}>
+              <button
+                style={{
+                  padding: '6px 16px',
+                  border: 'none',
+                  background: viewMode === 'decode' ? 'white' : 'transparent',
+                  borderRadius: '4px',
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  color: viewMode === 'decode' ? '#1890ff' : '#595959',
+                  boxShadow: viewMode === 'decode' ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none'
+                }}
+                onClick={() => setViewMode('decode')}
+              >
+                DECODE
+              </button>
+              <button
+                style={{
+                  padding: '6px 16px',
+                  border: 'none',
+                  background: viewMode === 'encode' ? 'white' : 'transparent',
+                  borderRadius: '4px',
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  color: viewMode === 'encode' ? '#1890ff' : '#595959',
+                  boxShadow: viewMode === 'encode' ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none'
+                }}
+                onClick={() => setViewMode('encode')}
+              >
+                ENCODE
+              </button>
+            </div>
+            <div style={{
+              display: 'flex',
+              gap: '8px'
+            }}>
+              <button 
+                style={{
+                  background: '#1890ff',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: 'pointer'
+                }}
+                onClick={copyJWT}
+              >
+                COPY
+              </button>
+              <button 
+                style={{
+                  background: '#1890ff',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: 'pointer'
+                }}
+                onClick={clearJWT}
+              >
+                CLEAR
+              </button>
+            </div>
           </div>
         </div>
-        <div className="header-status">
+        <div style={{
+          display: 'flex',
+          gap: '12px'
+        }}>
           {isValid && (
             <>
-              <span className="status-badge valid">Valid JWT</span>
-              <span className="status-badge verified">Signature Verified</span>
+              <span style={{
+                padding: '4px 12px',
+                borderRadius: '12px',
+                fontSize: '12px',
+                fontWeight: '500',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                background: '#52c41a',
+                color: 'white'
+              }}>Valid JWT</span>
+              <span style={{
+                padding: '4px 12px',
+                borderRadius: '12px',
+                fontSize: '12px',
+                fontWeight: '500',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                background: '#13c2c2',
+                color: 'white'
+              }}>Signature Verified</span>
             </>
           )}
         </div>
       </header>
 
-      <div className="token-section">
-        <textarea
-          className="token-input"
-          value={jwt}
-          onChange={handleJWTChange}
-          placeholder="Paste your JWT token here..."
-          spellCheck="false"
-          rows={4}
+      {viewMode === 'decode' ? (
+        <DecodeView
+          jwt={jwt}
+          onJwtChange={handleJWTChange}
+          decoded={decoded}
+          headerTable={headerTable}
+          payloadTable={payloadTable}
+          activeHeaderTab={activeHeaderTab}
+          activePayloadTab={activePayloadTab}
+          setActiveHeaderTab={setActiveHeaderTab}
+          setActivePayloadTab={setActivePayloadTab}
+          copyHeader={copyHeader}
+          copyPayload={copyPayload}
+          isValid={isValid}
         />
-      </div>
-
-      <div className="decoded-sections">
-        <div className="decoded-card">
-          <div className="card-header">
-            <div className="card-tabs">
-              <button 
-                className={`tab-btn ${activeHeaderTab === 'json' ? 'active' : ''}`}
-                onClick={() => setActiveHeaderTab('json')}
-              >
-                JSON
-              </button>
-              <button 
-                className={`tab-btn ${activeHeaderTab === 'table' ? 'active' : ''}`}
-                onClick={() => setActiveHeaderTab('table')}
-              >
-                CLAIMS TABLE
-              </button>
-            </div>
-            <button className="copy-btn" onClick={copyHeader}>
-              COPY
-            </button>
-          </div>
-          <div className="card-content">
-            {activeHeaderTab === 'json' ? (
-              <pre className="json-code">{decoded.header}</pre>
-            ) : (
-              renderTable(headerTable)
-            )}
-          </div>
-        </div>
-
-        <div className="decoded-card">
-          <div className="card-header">
-            <div className="card-tabs">
-              <button 
-                className={`tab-btn ${activePayloadTab === 'json' ? 'active' : ''}`}
-                onClick={() => setActivePayloadTab('json')}
-              >
-                JSON
-              </button>
-              <button 
-                className={`tab-btn ${activePayloadTab === 'table' ? 'active' : ''}`}
-                onClick={() => setActivePayloadTab('table')}
-              >
-                CLAIMS TABLE
-              </button>
-            </div>
-            <button className="copy-btn" onClick={copyPayload}>
-              COPY
-            </button>
-          </div>
-          <div className="card-content">
-            {activePayloadTab === 'json' ? (
-              <pre className="json-code">{decoded.payload}</pre>
-            ) : (
-              renderTable(payloadTable)
-            )}
-          </div>
-          <div className="card-title">DECODED PAYLOAD</div>
-        </div>
-      </div>
+      ) : (
+        <EncodeView />
+      )}
     </div>
   );
 }
