@@ -72,168 +72,130 @@ function App() {
 
   return (
     <div style={{
-      maxWidth: '1200px',
-      margin: '0 auto',
-      padding: '24px',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
-      backgroundColor: '#f5f5f5',
-      color: '#262626',
+      width: '100%',
+      minHeight: '100vh',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      backgroundColor: '#ffffff',
+      color: '#1a1a1a',
       lineHeight: 1.5
     }}>
-      <header style={{
-        background: '#ffffff',
-        borderRadius: '8px',
-        padding: '24px',
-        marginBottom: '16px',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-        border: '1px solid #d9d9d9'
+      {/* Contenedor principal con padding responsive */}
+      <div style={{
+        width: '100%',
+        maxWidth: '1400px',
+        margin: '0 auto',
+        padding: 'clamp(20px, 4vw, 40px) clamp(16px, 3vw, 24px)',
+        boxSizing: 'border-box'
       }}>
+        {/* Header minimalista */}
+        <div style={{
+          textAlign: 'center',
+          marginBottom: 'clamp(32px, 5vw, 48px)'
+        }}>
+          <h1 style={{
+            fontSize: 'clamp(1.75rem, 4vw, 2.25rem)',
+            fontWeight: '300',
+            margin: '0 0 12px 0',
+            color: '#1a1a1a',
+            letterSpacing: '-0.025em'
+          }}>
+            JWT Toolkit
+          </h1>
+          <p style={{
+            fontSize: 'clamp(1rem, 2vw, 1.125rem)',
+            color: '#666',
+            margin: 0,
+            fontWeight: '400'
+          }}>
+            Decode and encode JWT tokens
+          </p>
+        </div>
+
+        {/* Botones de modo minimalistas */}
         <div style={{
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '12px'
+          justifyContent: 'center',
+          marginBottom: 'clamp(24px, 4vw, 32px)'
         }}>
-          <h1 style={{ 
-            fontSize: '24px', 
-            fontWeight: '600', 
-            color: '#262626', 
-            margin: 0 
-          }}>
-            JSON WEB TOKEN (JWT)
-          </h1>
           <div style={{
             display: 'flex',
-            gap: '12px',
-            alignItems: 'center'
+            background: '#f8f9fa',
+            borderRadius: '8px',
+            padding: '4px',
+            width: 'fit-content'
           }}>
-            <div style={{ 
-              display: 'flex', 
-              gap: '4px', 
-              background: '#f0f0f0', 
-              padding: '4px', 
-              borderRadius: '6px',
-              marginRight: '12px'
-            }}>
-              <button
-                style={{
-                  padding: '6px 16px',
-                  border: 'none',
-                  background: viewMode === 'decode' ? 'white' : 'transparent',
-                  borderRadius: '4px',
-                  fontSize: '13px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  color: viewMode === 'decode' ? '#1890ff' : '#595959',
-                  boxShadow: viewMode === 'decode' ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none'
-                }}
-                onClick={() => setViewMode('decode')}
-              >
-                DECODE
-              </button>
-              <button
-                style={{
-                  padding: '6px 16px',
-                  border: 'none',
-                  background: viewMode === 'encode' ? 'white' : 'transparent',
-                  borderRadius: '4px',
-                  fontSize: '13px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  color: viewMode === 'encode' ? '#1890ff' : '#595959',
-                  boxShadow: viewMode === 'encode' ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none'
-                }}
-                onClick={() => setViewMode('encode')}
-              >
-                ENCODE
-              </button>
-            </div>
-            <div style={{
-              display: 'flex',
-              gap: '8px'
-            }}>
-              <button 
-                style={{
-                  background: '#1890ff',
-                  color: 'white',
-                  border: 'none',
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  cursor: 'pointer'
-                }}
-                onClick={copyJWT}
-              >
-                COPY
-              </button>
-              <button 
-                style={{
-                  background: '#1890ff',
-                  color: 'white',
-                  border: 'none',
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  cursor: 'pointer'
-                }}
-                onClick={clearJWT}
-              >
-                CLEAR
-              </button>
-            </div>
+            <button
+              style={{
+                padding: 'clamp(10px, 2vw, 12px) clamp(24px, 3vw, 32px)',
+                border: 'none',
+                background: viewMode === 'decode' ? '#ffffff' : 'transparent',
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                color: viewMode === 'decode' ? '#1a1a1a' : '#666',
+                transition: 'all 0.2s ease',
+                boxShadow: viewMode === 'decode' ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none',
+                whiteSpace: 'nowrap'
+              }}
+              onClick={() => setViewMode('decode')}
+            >
+              DECODE
+            </button>
+            <button
+              style={{
+                padding: 'clamp(10px, 2vw, 12px) clamp(24px, 3vw, 32px)',
+                border: 'none',
+                background: viewMode === 'encode' ? '#ffffff' : 'transparent',
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                color: viewMode === 'encode' ? '#1a1a1a' : '#666',
+                transition: 'all 0.2s ease',
+                boxShadow: viewMode === 'encode' ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none',
+                whiteSpace: 'nowrap'
+              }}
+              onClick={() => setViewMode('encode')}
+            >
+              ENCODE
+            </button>
           </div>
         </div>
-        <div style={{
-          display: 'flex',
-          gap: '12px'
-        }}>
-          {isValid && (
-            <>
-              <span style={{
-                padding: '4px 12px',
-                borderRadius: '12px',
-                fontSize: '12px',
-                fontWeight: '500',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-                background: '#52c41a',
-                color: 'white'
-              }}>Valid JWT</span>
-              <span style={{
-                padding: '4px 12px',
-                borderRadius: '12px',
-                fontSize: '12px',
-                fontWeight: '500',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-                background: '#13c2c2',
-                color: 'white'
-              }}>Signature Verified</span>
-            </>
-          )}
-        </div>
-      </header>
 
-      {viewMode === 'decode' ? (
-        <DecodeView
-          jwt={jwt}
-          onJwtChange={handleJWTChange}
-          decoded={decoded}
-          headerTable={headerTable}
-          payloadTable={payloadTable}
-          activeHeaderTab={activeHeaderTab}
-          activePayloadTab={activePayloadTab}
-          setActiveHeaderTab={setActiveHeaderTab}
-          setActivePayloadTab={setActivePayloadTab}
-          copyHeader={copyHeader}
-          copyPayload={copyPayload}
-          isValid={isValid}
-        />
-      ) : (
-        <EncodeView />
-      )}
+        {viewMode === 'decode' ? (
+          <DecodeView
+            jwt={jwt}
+            onJwtChange={handleJWTChange}
+            decoded={decoded}
+            headerTable={headerTable}
+            payloadTable={payloadTable}
+            activeHeaderTab={activeHeaderTab}
+            activePayloadTab={activePayloadTab}
+            setActiveHeaderTab={setActiveHeaderTab}
+            setActivePayloadTab={setActivePayloadTab}
+            copyHeader={copyHeader}
+            copyPayload={copyPayload}
+            isValid={isValid}
+            copyJWT={copyJWT}
+            clearJWT={clearJWT}
+          />
+        ) : (
+          <EncodeView />
+        )}
+
+        {/* Footer minimalista */}
+        <div style={{
+          textAlign: 'center',
+          marginTop: 'clamp(40px, 6vw, 60px)',
+          padding: '24px 0',
+          color: '#888',
+          fontSize: '14px',
+          borderTop: '1px solid #eaeaea'
+        }}>
+          <p>JWT Toolkit</p>
+        </div>
+      </div>
     </div>
   );
 }

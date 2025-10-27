@@ -19,6 +19,8 @@ interface DecodeViewProps {
   copyHeader: () => void;
   copyPayload: () => void;
   isValid: boolean;
+  copyJWT: () => void;
+  clearJWT: () => void;
 }
 
 const DecodeView: React.FC<DecodeViewProps> = ({
@@ -34,80 +36,151 @@ const DecodeView: React.FC<DecodeViewProps> = ({
   copyHeader,
   copyPayload,
   isValid,
+  copyJWT,
+  clearJWT,
 }) => {
   return (
     <>
-      <div style={{ marginBottom: '24px' }}>
+      {/* ENCODED VALUE Section - Minimalista */}
+      <div style={{
+        background: '#ffffff',
+        borderRadius: '8px',
+        padding: '24px',
+        marginBottom: '24px',
+        border: '1px solid #e0e0e0'
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '16px'
+        }}>
+          <h2 style={{
+            fontSize: '16px',
+            fontWeight: '600',
+            margin: 0,
+            color: '#1a1a1a'
+          }}>
+            ENCODED JWT
+          </h2>
+          <div style={{
+            display: 'flex',
+            gap: '8px'
+          }}>
+            <button 
+              style={{
+                background: '#1a1a1a',
+                color: 'white',
+                border: 'none',
+                padding: '8px 16px',
+                borderRadius: '4px',
+                fontSize: '13px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onClick={copyJWT}
+            >
+              COPY
+            </button>
+            <button 
+              style={{
+                background: '#f5f5f5',
+                color: '#666',
+                border: 'none',
+                padding: '8px 16px',
+                borderRadius: '4px',
+                fontSize: '13px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onClick={clearJWT}
+            >
+              CLEAR
+            </button>
+          </div>
+        </div>
+        
         <textarea
           style={{
             width: '100%',
-            background: '#ffffff',
-            border: '1px solid #d9d9d9',
-            borderRadius: '8px',
+            background: '#fafafa',
+            border: '1px solid #e0e0e0',
+            borderRadius: '6px',
             padding: '16px',
-            fontFamily: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
+            fontFamily: 'monospace',
             fontSize: '14px',
             lineHeight: 1.5,
-            resize: 'vertical'
+            resize: 'vertical',
+            minHeight: '80px',
+            color: '#1a1a1a'
           }}
           value={jwt}
           onChange={onJwtChange}
           placeholder="Paste your JWT token here..."
           spellCheck="false"
-          rows={4}
+          rows={3}
         />
+        
         {!isValid && jwt.trim() && (
           <div style={{
-            color: '#ff4d4f',
-            fontSize: '14px',
+            color: '#d32f2f',
+            fontSize: '13px',
             marginTop: '8px',
-            padding: '8px 12px',
-            background: '#fff2f0',
-            border: '1px solid #ffccc7',
-            borderRadius: '4px'
-          }}>Invalid JWT token format</div>
+            fontWeight: '500'
+          }}>
+            Invalid JWT token format
+          </div>
+        )}
+        
+        {isValid && jwt.trim() && (
+          <div style={{
+            color: '#388e3c',
+            fontSize: '13px',
+            marginTop: '8px',
+            fontWeight: '500'
+          }}>
+            Valid JWT token
+          </div>
         )}
       </div>
 
+      {/* DECODED SECTIONS - Minimalista */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
-        gap: '24px'
+        gap: '0',
+        background: '#ffffff',
+        border: '1px solid #e0e0e0',
+        borderRadius: '8px',
+        overflow: 'hidden'
       }}>
+        {/* HEADER COLUMN */}
         <div style={{
-          background: '#ffffff',
-          borderRadius: '8px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-          border: '1px solid #d9d9d9',
-          position: 'relative'
+          borderRight: '1px solid #e0e0e0'
         }}>
+          {/* Header tabs */}
           <div style={{
             display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '16px 20px',
-            borderBottom: '1px solid #d9d9d9',
-            background: '#f0f0f0',
-            borderRadius: '8px 8px 0 0'
+            borderBottom: '1px solid #e0e0e0',
+            background: '#fafafa'
           }}>
             <div style={{
               display: 'flex',
-              gap: '4px',
-              background: '#f0f0f0',
-              padding: '4px',
-              borderRadius: '6px'
+              flex: 1
             }}>
               <button
                 style={{
-                  padding: '6px 16px',
+                  flex: 1,
+                  padding: '12px 16px',
                   border: 'none',
-                  background: activeHeaderTab === 'json' ? 'white' : 'transparent',
-                  borderRadius: '4px',
-                  fontSize: '13px',
+                  background: activeHeaderTab === 'json' ? '#ffffff' : 'transparent',
+                  fontSize: '14px',
                   fontWeight: '500',
                   cursor: 'pointer',
-                  color: activeHeaderTab === 'json' ? '#1890ff' : '#595959',
-                  boxShadow: activeHeaderTab === 'json' ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none'
+                  color: activeHeaderTab === 'json' ? '#1a1a1a' : '#666',
+                  borderBottom: activeHeaderTab === 'json' ? '2px solid #1a1a1a' : 'none'
                 }}
                 onClick={() => setActiveHeaderTab('json')}
               >
@@ -115,105 +188,84 @@ const DecodeView: React.FC<DecodeViewProps> = ({
               </button>
               <button
                 style={{
-                  padding: '6px 16px',
+                  flex: 1,
+                  padding: '12px 16px',
                   border: 'none',
-                  background: activeHeaderTab === 'table' ? 'white' : 'transparent',
-                  borderRadius: '4px',
-                  fontSize: '13px',
+                  background: activeHeaderTab === 'table' ? '#ffffff' : 'transparent',
+                  fontSize: '14px',
                   fontWeight: '500',
                   cursor: 'pointer',
-                  color: activeHeaderTab === 'table' ? '#1890ff' : '#595959',
-                  boxShadow: activeHeaderTab === 'table' ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none'
+                  color: activeHeaderTab === 'table' ? '#1a1a1a' : '#666',
+                  borderBottom: activeHeaderTab === 'table' ? '2px solid #1a1a1a' : 'none'
                 }}
                 onClick={() => setActiveHeaderTab('table')}
               >
-                CLAIMS TABLE
+                TABLE
               </button>
             </div>
             <button 
               style={{
                 background: 'transparent',
-                border: '1px solid #d9d9d9',
-                padding: '6px 12px',
-                borderRadius: '4px',
-                fontSize: '13px',
+                border: 'none',
+                padding: '12px 16px',
+                fontSize: '14px',
                 fontWeight: '500',
                 cursor: 'pointer',
-                color: '#595959'
+                color: '#666',
+                borderLeft: '1px solid #e0e0e0'
               }}
               onClick={copyHeader}
             >
               COPY
             </button>
           </div>
+          
+          {/* Header content */}
           <div style={{
             padding: '20px',
             minHeight: '300px',
-            position: 'relative'
+            maxHeight: '400px',
+            overflow: 'auto'
           }}>
             {activeHeaderTab === 'json' ? (
               <pre style={{
-                fontFamily: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
+                fontFamily: 'monospace',
                 fontSize: '13px',
                 lineHeight: 1.5,
                 margin: 0,
                 whiteSpace: 'pre-wrap',
                 wordWrap: 'break-word',
-                color: '#262626'
+                color: '#1a1a1a'
               }}>{decoded.header}</pre>
             ) : (
               <ClaimsTable data={headerTable} />
             )}
           </div>
-          <div style={{
-            position: 'absolute',
-            top: '-10px',
-            left: '20px',
-            background: '#1890ff',
-            color: 'white',
-            padding: '4px 12px',
-            borderRadius: '4px',
-            fontSize: '12px',
-            fontWeight: '600',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px'
-          }}>DECODED HEADER</div>
         </div>
 
-        <div style={{
-          background: '#ffffff',
-          borderRadius: '8px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-          border: '1px solid #d9d9d9',
-          position: 'relative'
-        }}>
+        {/* PAYLOAD COLUMN */}
+        <div>
+          {/* Payload tabs */}
           <div style={{
             display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '16px 20px',
-            borderBottom: '1px solid #d9d9d9',
-            background: '#f0f0f0',
-            borderRadius: '8px 8px 0 0'
+            borderBottom: '1px solid #e0e0e0',
+            background: '#fafafa'
           }}>
             <div style={{
               display: 'flex',
-              gap: '4px',
-              background: '#f0f0f0',
-              padding: '4px',
-              borderRadius: '6px'
+              flex: 1
             }}>
               <button
                 style={{
-                  padding: '6px 16px',
+                  flex: 1,
+                  padding: '12px 16px',
                   border: 'none',
-                  background: activePayloadTab === 'json' ? 'white' : 'transparent',
-                  borderRadius: '4px',
-                  fontSize: '13px',
+                  background: activePayloadTab === 'json' ? '#ffffff' : 'transparent',
+                  fontSize: '14px',
                   fontWeight: '500',
                   cursor: 'pointer',
-                  color: activePayloadTab === 'json' ? '#1890ff' : '#595959',
-                  boxShadow: activePayloadTab === 'json' ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none'
+                  color: activePayloadTab === 'json' ? '#1a1a1a' : '#666',
+                  borderBottom: activePayloadTab === 'json' ? '2px solid #1a1a1a' : 'none'
                 }}
                 onClick={() => setActivePayloadTab('json')}
               >
@@ -221,69 +273,84 @@ const DecodeView: React.FC<DecodeViewProps> = ({
               </button>
               <button
                 style={{
-                  padding: '6px 16px',
+                  flex: 1,
+                  padding: '12px 16px',
                   border: 'none',
-                  background: activePayloadTab === 'table' ? 'white' : 'transparent',
-                  borderRadius: '4px',
-                  fontSize: '13px',
+                  background: activePayloadTab === 'table' ? '#ffffff' : 'transparent',
+                  fontSize: '14px',
                   fontWeight: '500',
                   cursor: 'pointer',
-                  color: activePayloadTab === 'table' ? '#1890ff' : '#595959',
-                  boxShadow: activePayloadTab === 'table' ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none'
+                  color: activePayloadTab === 'table' ? '#1a1a1a' : '#666',
+                  borderBottom: activePayloadTab === 'table' ? '2px solid #1a1a1a' : 'none'
                 }}
                 onClick={() => setActivePayloadTab('table')}
               >
-                CLAIMS TABLE
+                TABLE
               </button>
             </div>
             <button 
               style={{
                 background: 'transparent',
-                border: '1px solid #d9d9d9',
-                padding: '6px 12px',
-                borderRadius: '4px',
-                fontSize: '13px',
+                border: 'none',
+                padding: '12px 16px',
+                fontSize: '14px',
                 fontWeight: '500',
                 cursor: 'pointer',
-                color: '#595959'
+                color: '#666',
+                borderLeft: '1px solid #e0e0e0'
               }}
               onClick={copyPayload}
             >
               COPY
             </button>
           </div>
+          
+          {/* Payload content */}
           <div style={{
             padding: '20px',
             minHeight: '300px',
-            position: 'relative'
+            maxHeight: '400px',
+            overflow: 'auto'
           }}>
             {activePayloadTab === 'json' ? (
               <pre style={{
-                fontFamily: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
+                fontFamily: 'monospace',
                 fontSize: '13px',
                 lineHeight: 1.5,
                 margin: 0,
                 whiteSpace: 'pre-wrap',
                 wordWrap: 'break-word',
-                color: '#262626'
+                color: '#1a1a1a'
               }}>{decoded.payload}</pre>
             ) : (
               <ClaimsTable data={payloadTable} />
             )}
           </div>
-          <div style={{
-            position: 'absolute',
-            top: '-10px',
-            left: '20px',
-            background: '#1890ff',
-            color: 'white',
-            padding: '4px 12px',
-            borderRadius: '4px',
-            fontSize: '12px',
-            fontWeight: '600',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px'
-          }}>DECODED PAYLOAD</div>
+        </div>
+      </div>
+
+      {/* Títulos minimalistas */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '0',
+        marginTop: '12px'
+      }}>
+        <div style={{
+          textAlign: 'center',
+          fontSize: '14px',
+          fontWeight: '600',
+          color: '#666'
+        }}>
+          HEADER
+        </div>
+        <div style={{
+          textAlign: 'center',
+          fontSize: '14px',
+          fontWeight: '600',
+          color: '#666'
+        }}>
+          PAYLOAD
         </div>
       </div>
     </>

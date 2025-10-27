@@ -42,18 +42,18 @@ const EncodeView: React.FC = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
+      <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
         <button 
           style={{
-            backgroundColor: '#1890ff',
+            backgroundColor: '#1a1a1a',
             color: 'white',
             border: 'none',
-            padding: '8px 16px',
-            borderRadius: '6px',
+            padding: '10px 20px',
+            borderRadius: '4px',
             fontSize: '14px',
             fontWeight: '500',
             cursor: 'pointer',
-            opacity: isLoading ? '0.7' : '1'
+            opacity: isLoading ? '0.6' : '1'
           }}
           onClick={handleEncode}
           disabled={isLoading}
@@ -62,74 +62,64 @@ const EncodeView: React.FC = () => {
         </button>
         <button 
           style={{
-            backgroundColor: '#1890ff',
-            color: 'white',
+            backgroundColor: '#f5f5f5',
+            color: '#666',
             border: 'none',
-            padding: '8px 16px',
-            borderRadius: '6px',
+            padding: '10px 20px',
+            borderRadius: '4px',
             fontSize: '14px',
             fontWeight: '500',
             cursor: token ? 'pointer' : 'not-allowed',
-            opacity: token ? '1' : '0.7'
+            opacity: token ? '1' : '0.6'
           }}
           onClick={copyToken}
           disabled={!token}
         >
-          COPY TOKEN
+          Copy Token
         </button>
         <button 
           style={{
-            backgroundColor: '#1890ff',
-            color: 'white',
+            backgroundColor: '#f5f5f5',
+            color: '#666',
             border: 'none',
-            padding: '8px 16px',
-            borderRadius: '6px',
+            padding: '10px 20px',
+            borderRadius: '4px',
             fontSize: '14px',
             fontWeight: '500',
             cursor: 'pointer'
           }}
           onClick={clearAll}
         >
-          CLEAR
+          Clear
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
         <div style={{
           backgroundColor: '#ffffff',
           borderRadius: '8px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-          border: '1px solid #d9d9d9'
+          border: '1px solid #e0e0e0'
         }}>
           <div style={{
-            padding: '12px 16px',
-            borderBottom: '1px solid #d9d9d9',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
+            padding: '16px',
+            borderBottom: '1px solid #e0e0e0',
+            backgroundColor: '#fafafa'
           }}>
             <div style={{
-              display: 'flex',
-              gap: '8px'
-            }}>
-              <div style={{
-                padding: '6px 12px',
-                borderRadius: '4px',
-                backgroundColor: '#1890ff',
-                color: 'white',
-                fontSize: '14px'
-              }}>HEADER</div>
-            </div>
+              fontSize: '14px',
+              fontWeight: '600',
+              color: '#1a1a1a'
+            }}>HEADER</div>
           </div>
           <div style={{ padding: '16px' }}>
             <textarea
               style={{
                 width: '100%',
                 padding: '12px',
-                borderRadius: '6px',
-                border: '1px solid #d9d9d9',
-                backgroundColor: '#f5f5f5',
-                color: '#262626',
+                borderRadius: '4px',
+                border: '1px solid #e0e0e0',
+                backgroundColor: '#fafafa',
+                color: '#1a1a1a',
                 fontSize: '14px',
                 resize: 'vertical',
                 fontFamily: 'monospace'
@@ -144,38 +134,28 @@ const EncodeView: React.FC = () => {
         <div style={{
           backgroundColor: '#ffffff',
           borderRadius: '8px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-          border: '1px solid #d9d9d9'
+          border: '1px solid #e0e0e0'
         }}>
           <div style={{
-            padding: '12px 16px',
-            borderBottom: '1px solid #d9d9d9',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
+            padding: '16px',
+            borderBottom: '1px solid #e0e0e0',
+            backgroundColor: '#fafafa'
           }}>
             <div style={{
-              display: 'flex',
-              gap: '8px'
-            }}>
-              <div style={{
-                padding: '6px 12px',
-                borderRadius: '4px',
-                backgroundColor: '#1890ff',
-                color: 'white',
-                fontSize: '14px'
-              }}>PAYLOAD</div>
-            </div>
+              fontSize: '14px',
+              fontWeight: '600',
+              color: '#1a1a1a'
+            }}>PAYLOAD</div>
           </div>
           <div style={{ padding: '16px' }}>
             <textarea
               style={{
                 width: '100%',
                 padding: '12px',
-                borderRadius: '6px',
-                border: '1px solid #d9d9d9',
-                backgroundColor: '#f5f5f5',
-                color: '#262626',
+                borderRadius: '4px',
+                border: '1px solid #e0e0e0',
+                backgroundColor: '#fafafa',
+                color: '#1a1a1a',
                 fontSize: '14px',
                 resize: 'vertical',
                 fontFamily: 'monospace'
@@ -188,21 +168,22 @@ const EncodeView: React.FC = () => {
         </div>
       </div>
 
-      <div style={{ marginTop: '16px' }}>
+      <div style={{ marginBottom: '20px' }}>
         <label style={{ 
           display: 'block',
-          marginBottom: '6px',
-          color: '#595959',
-          fontSize: '14px'
+          marginBottom: '8px',
+          color: '#666',
+          fontSize: '14px',
+          fontWeight: '500'
         }}>Secret (for HS256)</label>
         <input
           style={{
             width: '100%',
             padding: '12px',
-            borderRadius: '6px',
-            border: '1px solid #d9d9d9',
-            backgroundColor: '#f5f5f5',
-            color: '#262626',
+            borderRadius: '4px',
+            border: '1px solid #e0e0e0',
+            backgroundColor: '#fafafa',
+            color: '#1a1a1a',
             fontSize: '14px',
             fontFamily: 'monospace'
           }}
@@ -212,21 +193,40 @@ const EncodeView: React.FC = () => {
         />
       </div>
 
-      {error && <div style={{ color: 'red', marginTop: 8 }}>{error}</div>}
+      {error && (
+        <div style={{ 
+          color: '#d32f2f', 
+          marginBottom: '16px',
+          fontSize: '14px',
+          padding: '12px',
+          backgroundColor: '#ffebee',
+          borderRadius: '4px',
+          border: '1px solid #ffcdd2'
+        }}>
+          {error}
+        </div>
+      )}
 
-      <div style={{ marginTop: 16 }}>
-        <label style={{ display: 'block', marginBottom: 6 }}>Generated Token</label>
+      <div>
+        <label style={{ 
+          display: 'block', 
+          marginBottom: '8px',
+          color: '#666',
+          fontSize: '14px',
+          fontWeight: '500'
+        }}>Generated Token</label>
         <textarea style={{
           width: '100%',
-          background: '#ffffff',
-          border: '1px solid #d9d9d9',
-          borderRadius: '8px',
+          background: '#fafafa',
+          border: '1px solid #e0e0e0',
+          borderRadius: '4px',
           padding: '16px',
-          fontFamily: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
+          fontFamily: 'monospace',
           fontSize: '14px',
           lineHeight: 1.5,
-          resize: 'vertical'
-        }} value={token} readOnly rows={3} />
+          resize: 'vertical',
+          color: '#1a1a1a'
+        }} value={token} readOnly rows={4} />
       </div>
     </div>
   );
