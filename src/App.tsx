@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { decodeJWT } from './lib/jwt';
-import type { JWTHeader, JWTPayload } from './lib/jwt';
 import DecodeView from './components/DecodeView';
 import EncodeView from './components/EncodeView';
 
