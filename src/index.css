@@ -19,7 +19,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar personalizado */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -39,12 +38,26 @@ body {
   background: #94a3b8;
 }
 
-/* Mejoras para inputs y textareas */
-input, textarea, button {
+input,
+textarea,
+button {
   font-family: inherit;
 }
 
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+button {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}
+
+button,
+input,
+textarea {
+  transition: all 0.2s ease;
 }
