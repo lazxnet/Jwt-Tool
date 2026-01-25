@@ -1,36 +1,15 @@
-# Etapa de construcción
-FROM node:20-alpine AS builder
-
-# Establecer el directorio de trabajo
+FROM node:20-alpine AS build
 WORKDIR /app
 
-# Copiar los archivos de configuración
 COPY package*.json ./
-COPY tsconfig*.json ./
-COPY vite.config.ts ./
+RUN npm install --silent
 
-# Instalar dependencias
-RUN npm ci
-
-# Copiar el código fuente
-COPY src/ ./src/
-COPY public/ ./public/
-COPY index.html ./
-
-# Construir la aplicación
+COPY . .
 RUN npm run build
 
-# Etapa de producción
-FROM nginx:alpine
-
-# Copiar la configuración personalizada de nginx si es necesaria
-# COPY nginx.conf /etc/nginx/nginx.conf
-
-# Copiar los archivos construidos desde la etapa de builder
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Exponer el puerto 80
+FROM node:20-alpine AS runtime
+WORKDIR /app
+COPY --from=build /app/dist ./dist
+RUN npm install -g serve --silent
 EXPOSE 80
-
-# Comando para iniciar nginx
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["serve", "-s", "dist", "-l", "80"]
