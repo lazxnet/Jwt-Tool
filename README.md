@@ -73,13 +73,13 @@ src/
 
 ##  Características Técnicas Destacadas
 
-### Decodificaci�n de JWT
+### Decodificación de JWT
 - Decodificación Base64URL con validación
 - Parsing automático de JSON
 - Manejo robusto de errores
 - Soporte para tokens malformados
 
-### Codificaci�n de JWT
+### Codificación de JWT
 - Generación de tokens con HMAC-SHA256
 - Validación de JSON antes de codificar
 - Interfaz para personalizar Header, Payload y Secret
