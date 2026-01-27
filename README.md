@@ -104,8 +104,8 @@ const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
 
 -  **Debugging**: Inspecciona rápidamente el contenido de tus JWTs
 -  **Testing**: Genera tokens de prueba con payloads personalizados
--  **Educaci�n**: Aprende cómo funciona la estructura de JWT
--  **Verificaci�n**: Valida la integridad de tokens existentes
+-  **Educacion**: Aprende cómo funciona la estructura de JWT
+-  **Verificación**: Valida la integridad de tokens existentes
 -  **Desarrollo**: Integra fácilmente en tu flujo de trabajo
 
 ##  Deployment con Docker
