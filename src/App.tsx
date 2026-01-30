@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import DecodeView from './components/DecodeView';
 import EncodeView from './components/EncodeView';
 import { decodeJWT } from './lib/jwt';
