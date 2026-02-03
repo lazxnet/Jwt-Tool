@@ -1,162 +1,155 @@
-# JWT Toolkit
+# JWT Toolkit ⚙️
 
-Una herramienta web moderna e intuitiva para **decodificar**, **codificar** y **analizar** JSON Web Tokens (JWT) directamente en tu navegador. Construida con React, TypeScript y Vite.
+**JWT Toolkit** es una aplicación web ligera y de código abierto para **decodificar**, **codificar** y **explorar** JSON Web Tokens (JWT) desde tu navegador. Está construida con **React + TypeScript** y usa la **Web Crypto API** para las operaciones criptográficas en el cliente.
 
-##  Caracteristicas
+---
 
--  **Decodificación de JWT**: Desglose automático de tokens en Header, Payload y Signature
--  **Codificación de JWT**: Genera tokens JWT con algoritmos HMAC (HS256)
--  **Análisis Visual**: Visualización clara de claims en formato tabla
--  **Copiar al Portapapeles**: Copia rápida de componentes individuales del JWT
--  **URL Sharing**: Comparte tokens directamente vía parámetros de URL
--  **Validación en Tiempo Real**: Valida la estructura y formato de JWT automáticamente
--  **Interfaz Responsiva**: Funciona perfectamente en desktop, tablet y móvil
--  **Sin Dependencias Externas de JWT**: Implementación nativa usando Web Crypto API
+## 📌 Índice
 
-##  Inicio Rápido
+- [Características](#-características)
+- [Demo rápida](#-demo-rápida)
+- [Requisitos](#-requisitos)
+- [Instalación](#-instalación)
+- [Scripts útiles](#-scripts-útiles)
+- [Cómo usar](#-cómo-usar)
+- [Detalles técnicos](#-detalles-técnicos)
+- [Docker](#-docker)
+- [Seguridad](#-seguridad)
+- [Contribuir](#-contribuir)
+- [Licencia](#-licencia)
+- [Autor](#-autor)
 
-### Requisitos Previos
-- Node.js 18+
-- npm o yarn
+---
 
-### Instalación
+## ✅ Características
+
+- Decodificación instantánea de JWT (Header, Payload, Signature)
+- Visualización en **JSON** y **tabla** de claims
+- Generación de JWT (soporta HMAC-SHA256 / **HS256**) con secret
+- Copiar al portapapeles (token, header o payload)
+- Compartir token mediante parámetro `?token=` en la URL
+- Procesamiento 100% local usando Web Crypto API (sin envío a servidores)
+- Interfaz responsiva y simple
+
+---
+
+## 🚀 Demo rápida
+
+1. Clona el proyecto, instala dependencias y ejecuta en modo desarrollo:
 
 ```bash
-# Clonar el repositorio
-git clone https://github.com/lazxnet/jwt-toolkit.git
+git clone <repo-url>
 cd jwt-toolkit
+npm install
+npm run dev
+# Abrir http://localhost:5173
+```
 
+2. Pega un JWT en el textarea o abre la app con `?token=<tu-token>` para auto-cargarlo.
+
+---
+
+## 🧰 Requisitos
+
+- Node.js 18+ (recomendado)
+- npm o yarn
+
+---
+
+## 🔧 Instalación y uso
+
+```bash
 # Instalar dependencias
 npm install
 
-# Iniciar servidor de desarrollo
+# Desarrollo
 npm run dev
-```
 
-La aplicación estará disponible en http://localhost:5173
-
-### Build para Producción
-
-```bash
-# Compilar y generar archivos optimizados
+# Compilar para producción
 npm run build
 
-# Previsualizar la build de producción
+# Ver la build en modo preview
 npm run preview
+
+# Ejecutar el linter
+npm run lint
 ```
 
-##  Tecnologías Utilizadas
+---
 
-| Tecnología | Propósito |
-|-----------|-----------|
-| **React 19** | Framework UI moderno |
-| **TypeScript** | Type safety y mejor DX |
-| **Vite** | Build tool rápido y moderno |
-| **Web Crypto API** | Operaciones criptográficas nativas |
-| **ESLint** | Linting y code quality |
+## 📝 Scripts disponibles
 
-##  Estructura del Proyecto
+| Script | Descripción |
+|---|---|
+| `npm run dev` | Inicia servidor de desarrollo con HMR |
+| `npm run build` | Compila TypeScript y genera la build de Vite |
+| `npm run preview` | Previsualiza la build de producción |
+| `npm run lint` | Ejecuta ESLint en el proyecto |
 
-```
-src/
- components/          # Componentes reutilizables
-    ClaimsTable/    # Tabla de visualización de claims
-    DecodeView/     # Vista de decodificación
-    EncodeView/     # Vista de codificación
- lib/                 # Lógica de negocio
-    jwt.ts          # Funciones de encode/decode JWT
-    clipboard.ts    # Utilidades de portapapeles
- styles/             # Temas y estilos
- types/              # Definiciones de TypeScript
- constants/          # Configuraciones por defecto
-```
+---
 
-##  Características Técnicas Destacadas
+## 📖 Cómo usar (funcionalidades principales)
 
-### Decodificación de JWT
-- Decodificación Base64URL con validación
-- Parsing automático de JSON
-- Manejo robusto de errores
-- Soporte para tokens malformados
+- **Decodificar**: Pega un token y la app mostrará Header y Payload en JSON o en tabla.
+- **Codificar**: Cambia a la vista "Encode" y genera un JWT con HS256 proporcionando un secret.
+- **Copiar**: Usa los botones COPY para copiar token, header o payload.
+- **Compartir**: Añade `?token=<jwt>` a la URL para cargar un token automáticamente.
 
-### Codificación de JWT
-- Generación de tokens con HMAC-SHA256
-- Validación de JSON antes de codificar
-- Interfaz para personalizar Header, Payload y Secret
-- Soporte para diferentes algoritmos
+> Nota: Si no se proporciona `secret` al generar un token, se crea un token sin firma (tercera parte vacía).
 
-### Web Crypto API
-Implementación nativa de operaciones criptográficas sin dependencias externas:
+---
 
-```typescript
-// Firma con HMAC-SHA256
-const key = await crypto.subtle.importKey(
-  'raw',
-  encoder.encode(secret),
-  { name: 'HMAC', hash: 'SHA-256' },
-  false,
-  ['sign']
-);
-const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
-```
+## 🔍 Detalles técnicos
 
-##  Casos de Uso
+- La decodificación se realiza con Base64URL y parseo JSON, con manejo de errores para tokens malformados (`src/lib/jwt.ts`).
+- La firma con **HS256** se realiza mediante `crypto.subtle` (Web Crypto API) y se codifica en Base64URL.
+- Tipos TS relevantes: `JWTDecodeResult`, `ViewMode`, `TabType` en `src/types`.
 
--  **Debugging**: Inspecciona rápidamente el contenido de tus JWTs
--  **Testing**: Genera tokens de prueba con payloads personalizados
--  **Educacion**: Aprende cómo funciona la estructura de JWT
--  **Verificación**: Valida la integridad de tokens existentes
--  **Desarrollo**: Integra fácilmente en tu flujo de trabajo
+---
 
-##  Deployment con Docker
+## 🐳 Docker
 
 ```bash
 # Construir imagen
 docker build -t jwt-toolkit .
 
-# Ejecutar contenedor
+# Ejecutar contenedor (ajusta puertos si es necesario)
 docker run -p 80:3000 jwt-toolkit
 ```
 
-La aplicación está optimizada para ejecutarse en contenedores y está lista para production.
-
-##  Scripts Disponibles
-
-| Script | Descripción |
-|--------|-------------|
-| 
-pm run dev | Inicia servidor de desarrollo con HMR |
-| 
-pm run build | Compila y optimiza para producción |
-| 
-pm run lint | Ejecuta ESLint en todo el proyecto |
-| 
-pm run preview | Previsualiza la build de producción |
-
-##  Seguridad
-
--  **Nota Importante**: Esta herramienta se ejecuta completamente en el navegador. **No envíes tokens con datos sensibles a través de la URL.**
-- Todos los cálculos criptográficos se realizan localmente
-- No se envían datos a servidores externos
-- Usa HTTPS siempre en producción
-
-##  Mejoras Futuras
-
-- [ ] Soporte para múltiples algoritmos de firma (RS256, ES256, etc.)
-- [ ] Verificación de firmas
-- [ ] Historial de tokens
-- [ ] Tema oscuro
-- [ ] Exportar/Importar configuraciones
-- [ ] Soporte para JWE (Encrypted JWT)
-
-##  Licencia
-s
-Este proyecto está bajo la licencia [Especificar tu licencia - ej: MIT, Apache 2.0]
-
-##  Autor
-
-**Lázaro Campos** - [GitHub](https://github.com/lazxdev)
+(Verifica tu `Dockerfile` y puertos expuestos según tu configuración de producción.)
 
 ---
 
-Tienes sugerencias o encontraste un bug? Abre un [issue](https://github.com/lazxnet/jwt-toolkit/issues) o un [pull request](https://github.com/lazxnet/jwt-toolkit/pulls).
+## ⚠️ Seguridad
+
+- Todo el procesamiento se realiza localmente en el navegador. **No envíes tokens sensibles por URL en entornos no seguros**.
+- Usa HTTPS en producción.
+- Esta herramienta NO está pensada para uso en producción como verificador de firmas (actualmente solo genera y decodifica HS256; la verificación completa de firmas está en la lista de mejoras).
+
+---
+
+## 🤝 Contribuir
+
+¡Contribuciones bienvenidas! Abre un issue o un pull request para proponer mejoras o correcciones. Algunas ideas:
+
+- Añadir verificación de firmas y soporte para RS/ES
+- Guardar historial de tokens
+- Añadir tests y CI
+- Añadir tema oscuro
+
+---
+
+## 📜 Licencia
+
+Este proyecto está bajo la licencia **MIT**. Consulta el archivo `LICENSE` para más detalles.
+
+---
+
+## 👤 Autor
+
+Lázaro Campos
+
+---
+
+Si detectas bugs o tienes sugerencias, abre un issue o envía un PR. ¡Gracias por tu interés! ✨
