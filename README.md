@@ -38,7 +38,7 @@
 1. Clona el proyecto, instala dependencias y ejecuta en modo desarrollo:
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/lazxdev/Jwt-Toolkit.git
 cd jwt-toolkit
 npm install
 npm run dev
