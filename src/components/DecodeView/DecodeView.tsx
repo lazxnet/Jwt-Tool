@@ -49,7 +49,7 @@ const DecodeView: React.FC<DecodeViewProps> = ({
     activeTab: TabType,
     onTabChange: (tab: TabType) => void,
     jsonContent: string,
-    tableData: Record<string, any> | null,
+    tableData: Record<string, unknown> | null,
     onCopyClick: () => void
   ) => (
     <div>

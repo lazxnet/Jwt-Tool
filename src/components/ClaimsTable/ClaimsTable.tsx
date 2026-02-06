@@ -2,7 +2,7 @@ import React from 'react';
 import { theme } from '../../styles/theme';
 
 interface ClaimsTableProps {
-  data: Record<string, any> | null;
+  data: Record<string, unknown> | null;
 }
 
 
@@ -25,7 +25,7 @@ const ClaimsTable: React.FC<ClaimsTableProps> = ({ data }) => {
 
   const entries = Object.entries(data);
 
-  const renderValue = (value: any) => {
+  const renderValue = (value: unknown) => {
     if (typeof value === 'boolean') {
       return (
         <span style={{

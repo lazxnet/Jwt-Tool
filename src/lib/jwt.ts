@@ -95,8 +95,8 @@ export const decodeJWT = (token: string): JWTDecodeResult => {
 
 
 export const encodeJWT = async (
-  header: Record<string, any>,
-  payload: Record<string, any>,
+  header: Record<string, unknown>,
+  payload: Record<string, unknown>,
   secret = '',
   alg = 'HS256'
 ): Promise<string> => {
