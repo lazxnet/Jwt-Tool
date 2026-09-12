@@ -33,6 +33,7 @@ export const theme = {
     md: '16px',
     lg: '20px',
     xl: '24px',
+    xxl: '32px',
   },
 };
 
@@ -57,7 +58,7 @@ export const styles = {
     backdropFilter: 'blur(20px)',
     WebkitBackdropFilter: 'blur(20px)',
     borderRadius: theme.borderRadius.xl,
-    padding: theme.spacing.xxl,
+    padding: '32px',
     border: '1px solid rgba(229, 229, 231, 0.6)',
     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
   },

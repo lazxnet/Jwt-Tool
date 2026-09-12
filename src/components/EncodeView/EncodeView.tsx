@@ -54,7 +54,7 @@ const EncodeView: React.FC = () => {
     value: string,
     onChange: (value: string) => void,
     rows = 8,
-    cardRef: React.RefObject<HTMLDivElement>
+    cardRef: React.RefObject<HTMLDivElement | null>
   ) => (
     <div className="panel" ref={cardRef}>
       <div style={{

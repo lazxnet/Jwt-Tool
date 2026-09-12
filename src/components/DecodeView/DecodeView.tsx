@@ -43,7 +43,7 @@ const DecodeView: React.FC<DecodeViewProps> = ({
     tableData: Record<string, unknown> | null,
     onCopyClick: () => void,
     title: string,
-    cardRef: React.RefObject<HTMLDivElement>
+    cardRef: React.RefObject<HTMLDivElement | null>
   ) => (
     <div className="panel" ref={cardRef}>
       <div style={{
