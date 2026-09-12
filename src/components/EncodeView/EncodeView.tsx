@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { encodeJWT } from '../../lib/jwt';
 import { copyToClipboard } from '../../lib/clipboard';
 import { DEFAULT_HEADER, DEFAULT_PAYLOAD, DEFAULT_SECRET } from '../../constants/defautls';
-import { styles, theme } from '../../styles/theme';
-
+import { theme } from '../../styles/theme';
 
 const EncodeView: React.FC = () => {
   const [headerText, setHeaderText] = useState(JSON.stringify(DEFAULT_HEADER, null, 2));
@@ -12,6 +11,10 @@ const EncodeView: React.FC = () => {
   const [token, setToken] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const headerCardRef = useRef<HTMLDivElement>(null);
+  const payloadCardRef = useRef<HTMLDivElement>(null);
+  const secretCardRef = useRef<HTMLDivElement>(null);
+  const tokenCardRef = useRef<HTMLDivElement>(null);
 
   const handleEncode = async () => {
     setError('');
@@ -50,125 +53,113 @@ const EncodeView: React.FC = () => {
     label: string,
     value: string,
     onChange: (value: string) => void,
-    rows = 8
+    rows = 8,
+    cardRef: React.RefObject<HTMLDivElement>
   ) => (
-    <div style={{
-      backgroundColor: theme.colors.background,
-      borderRadius: theme.borderRadius.lg,
-      border: `1px solid ${theme.colors.border}`,
-    }}>
+    <div className="panel" ref={cardRef}>
       <div style={{
-        padding: theme.spacing.md,
-        borderBottom: `1px solid ${theme.colors.border}`,
-        backgroundColor: theme.colors.backgroundLight,
+        padding: '0 0 12px 0',
+        borderBottom: '1px solid #e5e5e7',
+        marginBottom: '12px',
       }}>
-        <div style={{
-          fontSize: '14px',
-          fontWeight: '600',
-          color: theme.colors.textPrimary,
-        }}>
-          {label}
-        </div>
+        <span className="section-label">{label}</span>
       </div>
-      <div style={{ padding: theme.spacing.md }}>
-        <textarea
-          style={{ ...styles.textarea, padding: theme.spacing.sm }}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          rows={rows}
-        />
-      </div>
+      <textarea
+        className="textarea-field"
+        style={{ padding: '14px' }}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        rows={rows}
+        spellCheck={false}
+      />
     </div>
   );
 
   return (
     <div>
-      {/* Action Buttons */}
-      <div style={{ display: 'flex', gap: theme.spacing.sm, marginBottom: theme.spacing.xl }}>
+      <div style={{
+        display: 'flex',
+        gap: '10px',
+        marginBottom: '24px',
+        flexWrap: 'wrap',
+      }}>
         <button
-          style={{ ...styles.button.primary, opacity: isLoading ? 0.6 : 1 }}
+          className="btn-primary"
           onClick={handleEncode}
           disabled={isLoading}
+          style={{ opacity: isLoading ? 0.6 : 1 }}
         >
           {isLoading ? 'Encoding...' : 'Encode'}
         </button>
         <button
-          style={{
-            ...styles.button.secondary,
-            cursor: token ? 'pointer' : 'not-allowed',
-            opacity: token ? 1 : 0.6,
-          }}
+          className="btn-secondary"
           onClick={handleCopyToken}
           disabled={!token}
+          style={{ opacity: token ? 1 : 0.5, cursor: token ? 'pointer' : 'not-allowed' }}
         >
           Copy Token
         </button>
-        <button style={styles.button.secondary} onClick={handleClearAll}>
+        <button className="btn-secondary" onClick={handleClearAll}>
           Clear
         </button>
       </div>
 
-      {/* Header and Payload Input */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
-        gap: theme.spacing.lg,
-        marginBottom: theme.spacing.lg,
+        gap: '16px',
+        marginBottom: '24px',
       }}>
-        {renderTextArea('HEADER', headerText, setHeaderText)}
-        {renderTextArea('PAYLOAD', payloadText, setPayloadText)}
+        {renderTextArea('Header', headerText, setHeaderText, 8, headerCardRef)}
+        {renderTextArea('Payload', payloadText, setPayloadText, 8, payloadCardRef)}
       </div>
 
-      {/* Secret Input */}
-      <div style={{ marginBottom: theme.spacing.lg }}>
-        <label style={{
-          display: 'block',
-          marginBottom: theme.spacing.xs,
-          color: theme.colors.secondary,
-          fontSize: '14px',
-          fontWeight: '500',
+      <div className="panel" ref={secretCardRef} style={{ marginBottom: '16px' }}>
+        <div style={{
+          padding: '0 0 12px 0',
+          borderBottom: '1px solid #e5e5e7',
+          marginBottom: '12px',
         }}>
-          Secret (for HS256)
-        </label>
+          <span className="section-label">Secret (for HS256)</span>
+        </div>
         <input
-          style={styles.input}
+          className="input-field"
           value={secret}
           onChange={(e) => setSecret(e.target.value)}
           placeholder="secret"
+          type="text"
         />
       </div>
 
-      {/* Error Message */}
       {error && (
         <div style={{
           color: theme.colors.error,
           marginBottom: theme.spacing.md,
           fontSize: '14px',
-          padding: theme.spacing.sm,
+          padding: '12px 16px',
           backgroundColor: theme.colors.errorBg,
-          borderRadius: theme.borderRadius.sm,
+          borderRadius: theme.borderRadius.md,
           border: `1px solid ${theme.colors.errorBorder}`,
         }}>
           {error}
         </div>
       )}
 
-      {/* Generated Token Output */}
-      <div>
-        <label style={{
-          display: 'block',
-          marginBottom: theme.spacing.xs,
-          color: theme.colors.secondary,
-          fontSize: '14px',
-          fontWeight: '500',
+      <div className="panel" ref={tokenCardRef}>
+        <div style={{
+          padding: '0 0 12px 0',
+          borderBottom: '1px solid #e5e5e7',
+          marginBottom: '12px',
         }}>
-          Generated Token
-        </label>
+          <span className="section-label">Generated Token</span>
+        </div>
         <textarea
-          style={styles.textarea}
+          className="textarea-field"
+          style={{ minHeight: '60px' }}
           value={token}
           readOnly
           rows={4}
+          spellCheck={false}
         />
       </div>
     </div>

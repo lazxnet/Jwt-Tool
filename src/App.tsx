@@ -7,7 +7,6 @@ import type { JWTDecodeResult, ViewMode } from './types/jwt.types';
 import { DEFAULT_JWT } from './constants/defautls';
 import { styles, theme } from './styles/theme';
 
-
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('decode');
   const [jwt, setJwt] = useState('');
@@ -53,41 +52,20 @@ function App() {
     });
   }, []);
 
-  const renderModeButton = (mode: ViewMode, label: string) => (
-    <button
-      style={{
-        padding: 'clamp(10px, 2vw, 12px) clamp(24px, 3vw, 32px)',
-        border: 'none',
-        background: viewMode === mode ? theme.colors.background : 'transparent',
-        borderRadius: theme.borderRadius.md,
-        fontSize: '14px',
-        fontWeight: '500',
-        cursor: 'pointer',
-        color: viewMode === mode ? theme.colors.textPrimary : theme.colors.secondary,
-        transition: 'all 0.2s ease',
-        boxShadow: viewMode === mode ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none',
-        whiteSpace: 'nowrap',
-      }}
-      onClick={() => setViewMode(mode)}
-    >
-      {label}
-    </button>
-  );
-
   return (
     <div style={styles.container}>
       <div style={styles.main}>
-        {/* Header */}
         <div style={{
           textAlign: 'center',
-          marginBottom: 'clamp(32px, 5vw, 48px)',
+          marginBottom: 'clamp(48px, 8vw, 80px)',
+          paddingTop: 'clamp(20px, 3vw, 40px)',
         }}>
           <h1 style={{
-            fontSize: 'clamp(1.75rem, 4vw, 2.25rem)',
-            fontWeight: '300',
-            margin: '0 0 12px 0',
+            fontSize: 'clamp(2rem, 5vw, 2.75rem)',
+            fontWeight: '200',
+            margin: '0 0 8px 0',
             color: theme.colors.textPrimary,
-            letterSpacing: '-0.025em',
+            letterSpacing: '-0.03em',
           }}>
             JWT Toolkit
           </h1>
@@ -96,50 +74,53 @@ function App() {
             color: theme.colors.secondary,
             margin: 0,
             fontWeight: '400',
+            letterSpacing: '-0.01em',
           }}>
-            Decode and encode JWT tokens
+            Decode, encode, and inspect JSON Web Tokens
           </p>
         </div>
 
-        {/* Mode Toggle */}
         <div style={{
           display: 'flex',
           justifyContent: 'center',
-          marginBottom: 'clamp(24px, 4vw, 32px)',
+          marginBottom: 'clamp(32px, 5vw, 48px)',
         }}>
-          <div style={{
-            display: 'flex',
-            background: '#f8f9fa',
-            borderRadius: theme.borderRadius.lg,
-            padding: '4px',
-            width: 'fit-content',
-          }}>
-            {renderModeButton('decode', 'DECODE')}
-            {renderModeButton('encode', 'ENCODE')}
+          <div className="toggle-pill">
+            <button
+              className={`toggle-btn ${viewMode === 'decode' ? 'active' : ''}`}
+              onClick={() => setViewMode('decode')}
+            >
+              Decode
+            </button>
+            <button
+              className={`toggle-btn ${viewMode === 'encode' ? 'active' : ''}`}
+              onClick={() => setViewMode('encode')}
+            >
+              Encode
+            </button>
           </div>
         </div>
 
-        {/* Main Content */}
-        {viewMode === 'decode' ? (
-          <DecodeView
-            jwt={jwt}
-            onJwtChange={handleJwtChange}
-            decoded={decoded}
-            onCopy={handleCopy}
-            onClear={handleClear}
-          />
-        ) : (
-          <EncodeView />
-        )}
+        <div className="fade-in">
+          {viewMode === 'decode' ? (
+            <DecodeView
+              jwt={jwt}
+              onJwtChange={handleJwtChange}
+              decoded={decoded}
+              onCopy={handleCopy}
+              onClear={handleClear}
+            />
+          ) : (
+            <EncodeView />
+          )}
+        </div>
 
-        {/* Footer */}
         <div style={{
           textAlign: 'center',
-          marginTop: 'clamp(40px, 6vw, 60px)',
-          padding: '24px 0',
-          color: theme.colors.textTertiary,
-          fontSize: '14px',
-          borderTop: `1px solid ${theme.colors.borderLight}`,
+          marginTop: 'clamp(48px, 6vw, 64px)',
+          paddingTop: '24px',
+          color: theme.colors.tertiary,
+          fontSize: '13px',
         }}>
           <p>© {new Date().getFullYear()} JWT Toolkit by Lazxdev</p>
         </div>

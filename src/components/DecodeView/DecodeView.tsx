@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import ClaimsTable from '../ClaimsTable';
 import type { JWTDecodeResult, TabType } from '../../types/jwt.types';
-import { styles, theme } from '../../styles/theme';
+import { theme } from '../../styles/theme';
 
 interface DecodeViewProps {
   jwt: string;
@@ -10,7 +10,6 @@ interface DecodeViewProps {
   onCopy: (type: 'jwt' | 'header' | 'payload') => void;
   onClear: () => void;
 }
-
 
 const DecodeView: React.FC<DecodeViewProps> = ({
   jwt,
@@ -21,6 +20,8 @@ const DecodeView: React.FC<DecodeViewProps> = ({
 }) => {
   const [activeHeaderTab, setActiveHeaderTab] = useState<TabType>('json');
   const [activePayloadTab, setActivePayloadTab] = useState<TabType>('json');
+  const headerCardRef = useRef<HTMLDivElement>(null);
+  const payloadCardRef = useRef<HTMLDivElement>(null);
 
   const renderTabButton = (
     label: string,
@@ -28,17 +29,7 @@ const DecodeView: React.FC<DecodeViewProps> = ({
     onClick: () => void
   ) => (
     <button
-      style={{
-        flex: 1,
-        padding: `${theme.spacing.sm} ${theme.spacing.md}`,
-        border: 'none',
-        background: isActive ? theme.colors.background : 'transparent',
-        fontSize: '14px',
-        fontWeight: '500',
-        cursor: 'pointer',
-        color: isActive ? theme.colors.textPrimary : theme.colors.secondary,
-        borderBottom: isActive ? `2px solid ${theme.colors.primary}` : 'none',
-      }}
+      className={`tab-btn ${isActive ? 'active' : ''}`}
       onClick={onClick}
     >
       {label}
@@ -50,51 +41,52 @@ const DecodeView: React.FC<DecodeViewProps> = ({
     onTabChange: (tab: TabType) => void,
     jsonContent: string,
     tableData: Record<string, unknown> | null,
-    onCopyClick: () => void
+    onCopyClick: () => void,
+    title: string,
+    cardRef: React.RefObject<HTMLDivElement>
   ) => (
-    <div>
+    <div className="panel" ref={cardRef}>
       <div style={{
         display: 'flex',
-        borderBottom: `1px solid ${theme.colors.border}`,
-        background: theme.colors.backgroundLight,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '16px',
+      }}>
+        <h3 className="section-label">{title}</h3>
+        <button className="copy-btn" onClick={onCopyClick}>
+          Copy
+        </button>
+      </div>
+      <div style={{
+        display: 'flex',
+        borderBottom: '1px solid #e5e5e7',
+        marginBottom: '12px',
+        background: 'rgba(245, 245, 247, 0.4)',
+        borderRadius: '10px 10px 0 0',
       }}>
         <div style={{ display: 'flex', flex: 1 }}>
           {renderTabButton('JSON', activeTab === 'json', () => onTabChange('json'))}
           {renderTabButton('TABLE', activeTab === 'table', () => onTabChange('table'))}
         </div>
-        <button
-          style={{
-            background: 'transparent',
-            border: 'none',
-            padding: `${theme.spacing.sm} ${theme.spacing.md}`,
-            fontSize: '14px',
-            fontWeight: '500',
-            cursor: 'pointer',
-            color: theme.colors.secondary,
-            borderLeft: `1px solid ${theme.colors.border}`,
-          }}
-          onClick={onCopyClick}
-        >
-          COPY
-        </button>
       </div>
       <div style={{
-        padding: theme.spacing.lg,
-        minHeight: '300px',
-        maxHeight: '400px',
+        padding: '16px',
+        minHeight: '200px',
+        maxHeight: '350px',
         overflow: 'auto',
+        borderRadius: '0 0 10px 10px',
       }}>
         {activeTab === 'json' ? (
           <pre style={{
             fontFamily: theme.fonts.mono,
             fontSize: '13px',
-            lineHeight: 1.5,
+            lineHeight: 1.6,
             margin: 0,
             whiteSpace: 'pre-wrap',
             wordWrap: 'break-word',
             color: theme.colors.textPrimary,
           }}>
-            {jsonContent}
+            {jsonContent || <span style={{ color: theme.colors.tertiary }}>No data</span>}
           </pre>
         ) : (
           <ClaimsTable data={tableData} />
@@ -105,70 +97,71 @@ const DecodeView: React.FC<DecodeViewProps> = ({
 
   return (
     <>
-      {/* JWT Input Section */}
-      <div style={{ ...styles.card, marginBottom: theme.spacing.xl }}>
+      <div className="panel" style={{ marginBottom: '24px' }}>
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: theme.spacing.md,
+          flexWrap: 'wrap',
+          gap: '12px',
         }}>
-          <h2 style={{
-            fontSize: '16px',
-            fontWeight: '600',
-            margin: 0,
-            color: theme.colors.textPrimary,
-          }}>
-            ENCODED JWT
-          </h2>
-          <div style={{ display: 'flex', gap: theme.spacing.xs }}>
-            <button style={styles.button.primary} onClick={() => onCopy('jwt')}>
-              COPY
+          <div>
+            <h2 className="section-title">Encoded JWT</h2>
+            {jwt.trim() && (
+              <span className="badge" style={{
+                marginTop: '4px',
+                background: decoded.isValid
+                  ? 'rgba(52, 199, 89, 0.1)'
+                  : 'rgba(255, 59, 48, 0.1)',
+                color: decoded.isValid ? theme.colors.success : theme.colors.error,
+                display: 'inline-block',
+              }}>
+                {decoded.isValid ? '✓ Valid token' : '✗ Invalid format'}
+              </span>
+            )}
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              className="btn-primary"
+              onClick={() => onCopy('jwt')}
+              disabled={!jwt.trim()}
+              style={{ opacity: jwt.trim() ? 1 : 0.5 }}
+            >
+              Copy
             </button>
-            <button style={styles.button.secondary} onClick={onClear}>
-              CLEAR
+            <button
+              className="btn-secondary"
+              onClick={onClear}
+            >
+              Clear
             </button>
           </div>
         </div>
-
         <textarea
-          style={{ ...styles.textarea, minHeight: '80px' }}
+          className="textarea-field"
+          style={{ marginTop: '16px', minHeight: '80px' }}
           value={jwt}
           onChange={(e) => onJwtChange(e.target.value)}
           placeholder="Paste your JWT token here..."
           spellCheck={false}
           rows={3}
         />
-
-        {jwt.trim() && (
-          <div style={{
-            color: decoded.isValid ? theme.colors.success : theme.colors.error,
-            fontSize: '13px',
-            marginTop: theme.spacing.xs,
-            fontWeight: '500',
-          }}>
-            {decoded.isValid ? 'Valid JWT token' : 'Invalid JWT token format'}
-          </div>
-        )}
       </div>
 
-      {/* Header and Payload Sections */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
-        gap: '0',
-        background: theme.colors.background,
-        border: `1px solid ${theme.colors.border}`,
-        borderRadius: theme.borderRadius.lg,
-        overflow: 'hidden',
+        gap: '16px',
       }}>
-        <div style={{ borderRight: `1px solid ${theme.colors.border}` }}>
+        <div>
           {renderSection(
             activeHeaderTab,
             setActiveHeaderTab,
             decoded.headerStr,
             decoded.headerObj,
-            () => onCopy('header')
+            () => onCopy('header'),
+            'Header',
+            headerCardRef
           )}
         </div>
         <div>
@@ -177,33 +170,10 @@ const DecodeView: React.FC<DecodeViewProps> = ({
             setActivePayloadTab,
             decoded.payloadStr,
             decoded.payloadObj,
-            () => onCopy('payload')
+            () => onCopy('payload'),
+            'Payload',
+            payloadCardRef
           )}
-        </div>
-      </div>
-
-      {/* Labels */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '0',
-        marginTop: theme.spacing.sm,
-      }}>
-        <div style={{
-          textAlign: 'center',
-          fontSize: '14px',
-          fontWeight: '600',
-          color: theme.colors.secondary,
-        }}>
-          HEADER
-        </div>
-        <div style={{
-          textAlign: 'center',
-          fontSize: '14px',
-          fontWeight: '600',
-          color: theme.colors.secondary,
-        }}>
-          PAYLOAD
         </div>
       </div>
     </>
